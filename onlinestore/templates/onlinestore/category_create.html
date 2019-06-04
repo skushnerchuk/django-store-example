@@ -1,0 +1,28 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    Create category - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <form action="{% url 'create_category_url' %}" method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    {{ field.label }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Create category</button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+<div class="col-lg-3">
+    <h2 class="my-4">Categories</h2>
+    <div class="list-group">
+        {% for item in category %}
+            <div class="list-group">
+                <div class="list-group-item">
+                <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                {% if request.user.is_authenticated and request.user.is_staff %}
+                <a href="{{ item.get_update_url }}" class="align-right">(edit)</a>
+                <a href="{{ item.get_delete_url }}" class="align-right"> (delete)</a>
+                {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

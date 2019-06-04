@@ -1,0 +1,18 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    Delete product "{{ product.name }}" = {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+    <form action="{{ product.get_delete_url }}" method="POST">
+        {% csrf_token %}
+        <h3>A you shure want to delete product <b>"{{ product.name }}"</b>?</h3>
+        <a href="{{ product.get_absolute_url }}">Cancel</a>
+        <button type="submit" name="button" class="btn btn-danger">Delete</button>
+
+    </form>
+
+{% endblock %}

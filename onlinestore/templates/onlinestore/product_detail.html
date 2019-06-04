@@ -1,0 +1,29 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    {{ product.name }} Product detail
+{% endblock %}
+
+
+{% block content %}
+
+    {% include 'onlinestore/includes/categories.html' %}
+
+    <div class="col-lg-9">
+        <div class="container">
+            <br>
+            <h3>{{ product.name }}</h3><br>
+            <img src="/{{ product.image.name }}" style="max-height: 150px; max-width: 900px;">
+            <br><br>
+            {{ product.description }}
+            <br><br>
+            <form method="POST" role="form">
+                {% csrf_token %}
+                <h2>$ {{ product.price }}</h2>
+                <input id="slug" name="slug" type="hidden" value="{{ product.slug }}">
+                <button type="submit" class="btn btn-danger">Add to cart</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

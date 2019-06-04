@@ -1,0 +1,65 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+
+{% block content %}
+
+    {% include 'onlinestore/includes/categories.html' %}
+
+    <div class="col-lg-9">
+        <h2 class="my-4">Products</h2>
+        <div class="row">
+            {% for item in page_object.object_list %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <img class="card-img-top" src="/{{ item.image.name }}"
+                             style="max-height: 150px; max-width: 700px;"
+                             alt="">
+                        <div class="card-body">
+                            <h7 class="card-title">
+                                <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                            </h7>
+                            <h5>${{ item.price }}</h5>
+                            <p class="card-text">{{ item.short_description }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">★ ★ ★ ★ ☆</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
+
+        {% if is_paginated %}
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item {% if not prev_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ prev_url }}" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    {% for n in page_object.paginator.page_range %}
+                        {% if page_object.number == n %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(current)</span></a>
+                            </li>
+                        {% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not next_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ next_url }}" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+
+    </div>
+
+
+{% endblock %}

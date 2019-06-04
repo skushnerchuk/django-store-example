@@ -1,0 +1,18 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    Delete category "{{ category.name }}" = {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+    <form action="{{ category.get_delete_url }}" method="POST">
+        {% csrf_token %}
+        <h3>A you shure want to delete category <b>"{{ category.name }}"</b>?</h3>
+        <a href="{{ category.get_absolute_url }}">Cancel</a>
+        <button type="submit" name="button" class="btn btn-danger">Delete</button>
+
+    </form>
+
+{% endblock %}

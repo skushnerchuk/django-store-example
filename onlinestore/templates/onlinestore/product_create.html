@@ -1,0 +1,61 @@
+{% extends 'onlinestore/base.html' %}
+
+{% block title %}
+    Create product - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <form class="" action="{% url 'product_create_url' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                    {% if field.auto_id != 'id_image' %}
+                        {{ field.label }}
+                        {{ field }}
+                    {% else %}
+                        <div class="custom-file">
+                            <input id="image" accept=".jpg,.jpeg,.png" name="image" type="file" class="custom-file-input" required>
+                            <label class="custom-file-label" for="file">Choose product image</label>
+                        </div>
+                        <script>
+                            $('#file').on('change', function () {
+                                var fileName = $(this).val();
+                                $(this).next('.custom-file-label').html(fileName);
+                            })
+                        </script>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" name="submit">Create product</button>
+        </form>
+    </div>
+
+    <script src="https://bs-custom-file-input.netlify.com/dist/bs-custom-file-input.min.js"></script>
+    <script>
+        bsCustomFileInput.init()
+    </script>
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+{% endblock %}
