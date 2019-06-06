@@ -1,6 +1,7 @@
+from collections import defaultdict
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
@@ -40,7 +41,7 @@ class Cart(View):
         total_amount = 0
         # Формируем данные для таблицы заказа
         for item in request.session['cart']:
-            product = Product.objects.filter(slug=item)[0]
+            product = Product.objects.get(slug=item)
             total_amount += product.price * request.session['cart'][item]
             cart_items.append({
                 'name': product.name,
@@ -71,16 +72,9 @@ class ProductsByCategory(PaginatorMixin, View):
     """Вывод списка всех продуктов по категории"""
 
     def get(self, request, slug):
-        categories = []
-        paginator = None
-
-        try:
-            categories = Category.objects.all()
-            products = Product.objects.filter(category__slug=slug)
-            paginator = self.create_paginator(request, products, 6)
-        except ObjectDoesNotExist:
-            pass
-
+        categories = Category.objects.all()
+        products = Product.objects.filter(category__slug=slug)
+        paginator = self.create_paginator(request, products, 6)
         context = {
             'category': categories,
             'page_object': paginator['page'],
@@ -97,12 +91,23 @@ class ProductDetail(View):
 
     @staticmethod
     def add_product_to_session(request, product_slug):
-        if 'cart' not in request.session:
-            request.session['cart'] = {}
-        if product_slug in request.session['cart']:
+        """
+        Код из рекомендации:
+            def add_product_to_session(request, product_slug):
+                request.session.setdefault('cart', defaultdict(int))
+                request.session['cart'] += 1
+        не работает:
+            unsupported operand type(s) for +=: 'collections.defaultdict' and 'int'
+        К тому же в корзине должны лежать пары product_slug:count
+        Если попробовать сделать так:
+            request.session.setdefault('cart', defaultdict(int))
             request.session['cart'][product_slug] += 1
-        else:
-            request.session['cart'][product_slug] = 1
+        то получаем исключение KeyError из-за +=, если =, то ключ создается
+        Сделал комбинацию
+        """
+        request.session.setdefault('cart', {})
+        request.session['cart'].setdefault(product_slug, 0)
+        request.session['cart'][product_slug] += 1
 
     @staticmethod
     def get(request, slug):
@@ -112,7 +117,7 @@ class ProductDetail(View):
         try:
             categories = Category.objects.all()
             product = get_object_or_404(Product, slug__iexact=slug)
-        except ObjectDoesNotExist:
+        except Product.DoesNotExist:
             pass
 
         context = {
